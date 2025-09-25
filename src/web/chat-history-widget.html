@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat History Widget</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: #1a1a1a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .widget-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #2a2a2a;
+      border-radius: 8px;
+      border: 1px solid #404040;
+    }
+
+    .widget-header {
+      background: linear-gradient(135deg, #0078d4, #106ebe);
+      padding: 16px 20px;
+      border-radius: 8px 8px 0 0;
+      border-bottom: 1px solid #404040;
+    }
+
+    .widget-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      font-weight: 600;
+    }
+
+    .widget-title .icon {
+      font-size: 20px;
+    }
+
+    .search-container {
+      padding: 16px 20px;
+      border-bottom: 1px solid #404040;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 10px 12px;
+      background: #1a1a1a;
+      border: 1px solid #404040;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-size: 14px;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #0078d4;
+    }
+
+    .sessions-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .session-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      cursor: pointer;
+      border-bottom: 1px solid #404040;
+      transition: background-color 0.2s ease;
+    }
+
+    .session-item:hover {
+      background: #333333;
+    }
+
+    .session-item:last-child {
+      border-bottom: none;
+    }
+
+    .session-info {
+      flex: 1;
+    }
+
+    .session-title {
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #ffffff;
+    }
+
+    .session-meta {
+      font-size: 12px;
+      color: #888888;
+    }
+
+    .session-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      padding: 6px 8px;
+      background: #404040;
+      border: none;
+      border-radius: 4px;
+      color: #e0e0e0;
+      cursor: pointer;
+      font-size: 12px;
+      transition: background-color 0.2s ease;
+    }
+
+    .action-btn:hover {
+      background: #505050;
+    }
+
+    .action-btn.primary {
+      background: #0078d4;
+    }
+
+    .action-btn.primary:hover {
+      background: #106ebe;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #888888;
+    }
+
+    .full-interface-link {
+      display: block;
+      text-align: center;
+      padding: 16px 20px;
+      background: #333333;
+      color: #0078d4;
+      text-decoration: none;
+      border-radius: 0 0 8px 8px;
+      transition: background-color 0.2s ease;
+    }
+
+    .full-interface-link:hover {
+      background: #404040;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-container">
+    <div class="widget-header">
+      <div class="widget-title">
+        <span class="icon">💬</span>
+        <span>Chat History</span>
+        <small style="margin-left: auto; opacity: 0.8;">DevTools Integration</small>
+      </div>
+    </div>
+
+    <div class="search-container">
+      <input
+        type="text"
+        placeholder="Search your chats..."
+        class="search-input"
+        id="searchInput"
+      >
+    </div>
+
+    <div class="sessions-list" id="sessionsList">
+      <div class="empty-state" id="emptyState">
+        Loading chat sessions...
+      </div>
+    </div>
+
+    <a href="http://localhost:3981" class="full-interface-link" target="_blank">
+      Open Full Chat Interface →
+    </a>
+  </div>
+
+  <script>
+    class ChatHistoryWidget {
+      constructor() {
+        this.searchInput = document.getElementById('searchInput');
+        this.sessionsList = document.getElementById('sessionsList');
+        this.emptyState = document.getElementById('emptyState');
+
+        this.searchInput.addEventListener('input', (e) => this.searchSessions(e.target.value));
+        this.loadSessions();
+      }
+
+      async loadSessions() {
+        try {
+          const response = await fetch('/api/sessions');
+          const sessions = await response.json();
+          this.renderSessions(sessions);
+        } catch (error) {
+          console.error('Failed to load sessions:', error);
+          this.emptyState.textContent = 'Failed to load chat sessions';
+        }
+      }
+
+      renderSessions(sessions) {
+        if (sessions.length === 0) {
+          this.sessionsList.innerHTML = '<div class="empty-state">No chat sessions found</div>';
+          return;
+        }
+
+        const sessionsHTML = sessions.map(session => {
+          const updatedAt = new Date(session.updatedAt);
+          const timeAgo = this.formatTimeAgo(updatedAt);
+
+          return `
+            <div class="session-item" data-session-id="${session.id}">
+              <div class="session-info">
+                <div class="session-title">${this.escapeHtml(session.title)}</div>
+                <div class="session-meta">${session.messageCount} messages • ${timeAgo}</div>
+              </div>
+              <div class="session-actions">
+                <button class="action-btn primary" onclick="this.openSession('${session.id}')">Open</button>
+                <button class="action-btn" onclick="this.deleteSession('${session.id}')">Delete</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        this.sessionsList.innerHTML = sessionsHTML;
+
+        // Add click handlers to session items
+        this.sessionsList.querySelectorAll('.session-item').forEach(item => {
+          item.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('action-btn')) {
+              const sessionId = item.dataset.sessionId;
+              this.openSession(sessionId);
+            }
+          });
+        });
+      }
+
+      async searchSessions(query) {
+        if (!query.trim()) {
+          this.loadSessions();
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/sessions/search?q=${encodeURIComponent(query)}`);
+          const sessions = await response.json();
+          this.renderSessions(sessions);
+        } catch (error) {
+          console.error('Failed to search sessions:', error);
+        }
+      }
+
+      openSession(sessionId) {
+        // Open the session in the full chat interface
+        window.open(`http://localhost:3981?session=${sessionId}`, '_blank');
+      }
+
+      async deleteSession(sessionId) {
+        if (!confirm('Are you sure you want to delete this chat session?')) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/sessions/${sessionId}`, {
+            method: 'DELETE'
+          });
+
+          if (response.ok) {
+            this.loadSessions(); // Refresh the list
+          } else {
+            alert('Failed to delete session');
+          }
+        } catch (error) {
+          console.error('Failed to delete session:', error);
+          alert('Failed to delete session');
+        }
+      }
+
+      formatTimeAgo(date) {
+        const now = new Date();
+        const diff = now - date;
+        const minutes = Math.floor(diff / 60000);
+        const hours = Math.floor(diff / 3600000);
+        const days = Math.floor(diff / 86400000);
+
+        if (minutes < 1) return 'Just now';
+        if (minutes < 60) return `${minutes}m ago`;
+        if (hours < 24) return `${hours}h ago`;
+        if (days < 30) return `${days}d ago`;
+        return date.toLocaleDateString();
+      }
+
+      escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+      }
+    }
+
+    // Initialize widget
+    document.addEventListener('DOMContentLoaded', () => {
+      new ChatHistoryWidget();
+    });
+
+    // Global functions for button handlers
+    function openSession(sessionId) {
+      window.open(`http://localhost:3981?session=${sessionId}`, '_blank');
+    }
+
+    function deleteSession(sessionId) {
+      if (window.chatWidget) {
+        window.chatWidget.deleteSession(sessionId);
+      }
+    }
+
+    // Store widget instance globally for button access
+    document.addEventListener('DOMContentLoaded', () => {
+      window.chatWidget = new ChatHistoryWidget();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "id": "f16d4724-fe34-47d0-93e3-c696b1772850",
+  "title": "hello",
+  "createdAt": "2025-09-25T06:21:04.299Z",
+  "updatedAt": "2025-09-25T06:27:35.105Z",
+  "messages": [
+    {
+      "id": "5fdba32f-b4bc-4519-b4e9-156e7b2b62e8",
+      "timestamp": "2025-09-25T06:27:04.857Z",
+      "role": "user",
+      "content": "hello",
+      "type": "text"
+    },
+    {
+      "id": "",
+      "timestamp": "2025-09-25T06:27:05.583Z",
+      "role": "assistant",
+      "content": "Hello! How can I assist you today?",
+      "type": "text"
+    },
+    {
+      "id": "ca4740c0-3a4b-4c00-b0e8-dfa12875c7e9",
+      "timestamp": "2025-09-25T06:27:22.722Z",
+      "role": "user",
+      "content": "Can you create an image of a flying whale in the sky?",
+      "type": "text"
+    },
+    {
+      "id": "",
+      "timestamp": "2025-09-25T06:27:35.105Z",
+      "role": "assistant",
+      "content": "🖼️ **Here's your generated image!**\n\n**Original request:** Can you create an image of a flying whale in the sky?\n**Enhanced prompt:** \"Generate a majestic image of a colossal blue whale soaring through a vibrant sunset sky, its skin glistening with droplets of water reflecting the warm hues of orange, pink, and purple. The whale, positioned in the center, appears almost ethereal as it gracefully arcs above fluffy, golden-lit clouds. Rays of the setting sun pierce through gaps in the clouds, creating a dramatic backlight that highlights the whale's silhouette and the misty trail left in its wake. The scene should convey a sense of serene, surreal beauty, merging the oceanic with the celestial.\"\n\n✨ **Created by FLUX.1-Kontext-pro**",
+      "type": "image",
+      "imageUrl": "http://localhost:3980/images/flux_image_1758781655051.png",
+      "thumbnailUrl": "http://localhost:3980/images/flux_image_1758781655051_thumb.png"
+    }
+  ],
+  "messageCount": 4
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Corgan AI Chat - Chat History | DevTools Integration</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar for chat history -->
+    <div class="sidebar">
+      <div class="devtools-integration-banner">
+        <div class="banner-content">
+          <span class="banner-icon">🛠️</span>
+          <div class="banner-text">
+            <strong>Chat History</strong>
+            <small>DevTools Integration</small>
+          </div>
+          <a href="http://localhost:3979/devtools" class="devtools-link" target="_blank" title="Open DevTools">
+            <span class="icon">↗</span>
+          </a>
+        </div>
+      </div>
+      <div class="sidebar-header">
+        <button class="new-chat-btn" id="newChatBtn">
+          <span class="icon">+</span>
+          New chat
+        </button>
+      </div>
+
+      <div class="sidebar-content">
+        <div class="search-container">
+          <input
+            type="text"
+            placeholder="Search your chats..."
+            class="search-input"
+            id="searchInput"
+          >
+        </div>
+
+        <div class="chat-count" id="chatCount">
+          Loading chats...
+        </div>
+
+        <div class="chat-list" id="chatList">
+          <!-- Chat history items will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Main chat area -->
+    <div class="main-content">
+      <div class="chat-container">
+        <div class="chat-header" id="chatHeader">
+          <h2 id="chatTitle">Select a chat or start a new conversation</h2>
+          <button class="delete-chat-btn" id="deleteChatBtn" style="display: none;">
+            <span class="icon">🗑️</span>
+            Delete Chat
+          </button>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+          <div class="welcome-message" id="welcomeMessage">
+            <div class="logo">🤖</div>
+            <h1>Corgan AI Chat</h1>
+            <p>Your intelligent assistant with GPT-4 and FLUX.1-Kontext-pro image generation</p>
+            <div class="features">
+              <div class="feature">
+                <span class="icon">💬</span>
+                <span>Advanced conversation with GPT-4</span>
+              </div>
+              <div class="feature">
+                <span class="icon">🎨</span>
+                <span>High-quality image generation</span>
+              </div>
+              <div class="feature">
+                <span class="icon">📚</span>
+                <span>Complete chat history</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="messages" id="messages">
+            <!-- Chat messages will appear here -->
+          </div>
+        </div>
+
+        <div class="input-container">
+          <div class="input-wrapper">
+            <textarea
+              placeholder="Message Corgan AI..."
+              class="message-input"
+              id="messageInput"
+              rows="1"
+            ></textarea>
+            <button class="send-btn" id="sendBtn">
+              <span class="icon">↗</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading overlay -->
+  <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+    <div class="loading-spinner"></div>
+    <p>Generating response...</p>
+  </div>
+
+  <script src="chat.js"></script>
+</body>
+</html>
